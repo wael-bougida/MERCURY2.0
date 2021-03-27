@@ -1,0 +1,196 @@
+MariaDB [group19]> SELECT S.sid,
+    ->     S.name,
+    ->     S.mat_num
+    -> FROM Students S
+    -> ORDER BY S.name;
++--------+-----------------+---------+
+| sid    | name            | mat_num |
++--------+-----------------+---------+
+| 2356DD | Aoge Bo         | 24585   |
+| 1563QB | Jane Doe        | 36536   |
+| 3456FD | Jeng Lu         | 33145   |
+| 4347QS | Jenni Lo        | 33436   |
+| 1093QA | John Doe        | 34525   |
+| 1053RD | Nayan Pradhan   | 23384   |
+| 1034FF | Nurgun Rafizade | 35674   |
+| 2345RD | Sergey Lav      | 43456   |
+| 1034B7 | Tuan Pham       | 34567   |
+| 1053GF | Wail Bougida    | 23454   |
++--------+-----------------+---------+
+10 rows in set (0,001 sec)
+
+MariaDB [group19]> SELECT R.rid,
+    ->     D.position,
+    ->     R.floor
+    -> FROM Rooms R
+    ->     INNER JOIN Double_rooms D ON D.rid = R.rid
+    -> WHERE R.floor IN (
+    ->         SELECT R.floor
+    ->         FROM Rooms R
+    ->         GROUP BY R.floor
+    ->         HAVING COUNT(R.rid) > 1
+    ->     )
+    ->     AND D.position = 0;
++--------+----------+-------+
+| rid    | position | floor |
++--------+----------+-------+
+| 2345BG |          |     3 |
+| P3X4RW |          |     2 |
+| QW34SF |          |     1 |
++--------+----------+-------+
+3 rows in set (0,002 sec)
+
+MariaDB [group19]> SELECT M.cid,
+    ->     COUNT(M.mgid) AS managers_count
+    -> FROM Managers M
+    ->     INNER JOIN Colleges C ON M.cid = C.cid
+    -> GROUP BY M.cid;
++-------+----------------+
+| cid   | managers_count |
++-------+----------------+
+| 345RE |              2 |
+| 346TW |              2 |
+| 567WS |              1 |
+| 987TR |              2 |
++-------+----------------+
+4 rows in set (0,001 sec)
+
+MariaDB [group19]> SELECT S.sid,
+    ->     S.name,
+    ->     S.mat_num,
+    ->     R.rid,
+    ->     R.floor
+    -> FROM Students S
+    ->     INNER JOIN Rooms R ON S.rid = R.rid;
++--------+-----------------+---------+--------+-------+
+| sid    | name            | mat_num | rid    | floor |
++--------+-----------------+---------+--------+-------+
+| 1034B7 | Tuan Pham       | 34567   | 2345BG |     3 |
+| 1034FF | Nurgun Rafizade | 35674   | 2346BG |     3 |
+| 1053GF | Wail Bougida    | 23454   | 1234SA |     2 |
+| 1053RD | Nayan Pradhan   | 23384   | QW34SF |     1 |
+| 1093QA | John Doe        | 34525   | P2X2SR |     1 |
+| 1563QB | Jane Doe        | 36536   | P3X4RW |     2 |
+| 2345RD | Sergey Lav      | 43456   | POQ123 |     2 |
+| 2356DD | Aoge Bo         | 24585   | QW35SF |     1 |
+| 3456FD | Jeng Lu         | 33145   | QWS232 |     3 |
+| 4347QS | Jenni Lo        | 33436   | P3X5RW |     2 |
++--------+-----------------+---------+--------+-------+
+10 rows in set (0,001 sec)
+
+MariaDB [group19]> SELECT S.sid,
+    ->     S.name,
+    ->     S.mat_num
+    -> FROM Students S
+    ->     INNER JOIN Double_rooms D ON S.rid = D.rid;
++--------+-----------------+---------+
+| sid    | name            | mat_num |
++--------+-----------------+---------+
+| 1034B7 | Tuan Pham       | 34567   |
+| 1034FF | Nurgun Rafizade | 35674   |
+| 1053RD | Nayan Pradhan   | 23384   |
+| 1563QB | Jane Doe        | 36536   |
+| 2356DD | Aoge Bo         | 24585   |
+| 4347QS | Jenni Lo        | 33436   |
++--------+-----------------+---------+
+6 rows in set (0,001 sec)
+
+MariaDB [group19]> SELECT C.cid,
+    ->     C.name,
+    ->     M.mgid,
+    ->     M.name
+    -> FROM Managers M
+    ->     INNER JOIN RA ON RA.mgid = M.mgid
+    ->     INNER JOIN Colleges C ON C.name = 'Krupp'
+    ->     AND C.cid = M.cid;
++-------+-------+--------+------+
+| cid   | name  | mgid   | name |
++-------+-------+--------+------+
+| 345RE | Krupp | 3245AF | Lynn |
++-------+-------+--------+------+
+1 row in set (0,001 sec)
+
+MariaDB [group19]> SELECT S.sid,
+    ->     S.name,
+    ->     R.floor,
+    ->     R.mailbox
+    -> From Rooms R
+    ->     INNER JOIN Students S ON R.rid = S.rid
+    -> WHERE R.floor IN (2, 3);
++--------+-----------------+-------+---------+
+| sid    | name            | floor | mailbox |
++--------+-----------------+-------+---------+
+| 1034B7 | Tuan Pham       |     3 | 345TR   |
+| 1034FF | Nurgun Rafizade |     3 | 345TO   |
+| 1053GF | Wail Bougida    |     2 | 231DF   |
+| 1563QB | Jane Doe        |     2 | 213AC   |
+| 2345RD | Sergey Lav      |     2 | 256FT   |
+| 3456FD | Jeng Lu         |     3 | 397WR   |
+| 4347QS | Jenni Lo        |     2 | 213AD   |
++--------+-----------------+-------+---------+
+7 rows in set (0,001 sec)
+
+MariaDB [group19]> SELECT C.name,
+    ->     R.rnumber,
+    ->     COUNT(S.sid) AS students_num
+    -> FROM Rooms R
+    ->     INNER JOIN Students S ON S.rid = R.rid
+    ->     INNER JOIN Colleges C ON R.cid = C.cid
+    -> GROUP BY R.cid;
++-------------+---------+--------------+
+| name        | rnumber | students_num |
++-------------+---------+--------------+
+| Krupp       | 345     |            4 |
+| Nordmetall  | 231     |            2 |
+| Mercator    | 213     |            3 |
+| College III | 256     |            1 |
++-------------+---------+--------------+
+4 rows in set (0,001 sec)
+
+MariaDB [group19]> SELECT S.sid,
+    ->     S.name,
+    ->     Sw.sickness
+    -> FROM Students S
+    ->     INNER JOIN Students_with_special_need Sw ON Sw.sid = S.sid
+    ->     INNER JOIN Rooms R ON R.rid = S.rid
+    -> WHERE R.floor = 2;
++--------+--------------+----------+
+| sid    | name         | sickness |
++--------+--------------+----------+
+| 1053GF | Wail Bougida | Obesity  |
+| 2345RD | Sergey Lav   | Asthma   |
++--------+--------------+----------+
+2 rows in set (0,001 sec)
+
+MariaDB [group19]> SELECT R.floor
+    -> FROM Rooms R
+    -> GROUP BY R.floor
+    -> HAVING COUNT(*) > 3;
++-------+
+| floor |
++-------+
+|     2 |
++-------+
+1 row in set (0,001 sec)
+
+MariaDB [group19]> SELECT COUNT(R.availability)
+    -> FROM Rooms R
+    -> WHERE R.availability = 1;
++-----------------------+
+| COUNT(R.availability) |
++-----------------------+
+|                     4 |
++-----------------------+
+1 row in set (0,001 sec)
+
+MariaDB [group19]> SELECT *
+    -> FROM Colleges C;
++-------+-------------+----------------+
+| cid   | name        | address        |
++-------+-------------+----------------+
+| 345RE | Krupp       | College Ring 4 |
+| 346TW | Nordmetall  | College Ring 3 |
+| 567WS | Mercator    | College Ring 2 |
+| 987TR | College III | College Ring 1 |
++-------+-------------+----------------+
+4 rows in set (0,001 sec)
